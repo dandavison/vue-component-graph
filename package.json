@@ -11,6 +11,7 @@
   "devDependencies": {
     "@types/lodash": "^4.14.168",
     "@types/node": "^14.14.31",
+    "@types/vue": "^2.0.0",
     "json-stringify-safe": "^5.0.1",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.2"
