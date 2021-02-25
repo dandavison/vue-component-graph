@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "A static analysis tool for creating visualizations of a Vue.js codebase",
   "main": "dist/index.js",
-  "scripts": {},
+  "scripts": {
+    "dev": "ts-node src/index.ts"
+  },
   "author": "Dan Davison",
   "license": "ISC",
   "devDependencies": {
