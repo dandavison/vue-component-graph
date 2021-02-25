@@ -1,9 +1,14 @@
+const _ = require("lodash");
 const babel = require("@babel/core");
 const vueCompiler = require("vue-template-compiler");
-const fs = require("fs");
 
-export const parseVueComponent = function (filename: string): object {
-  const componentCode = fs.readFileSync(filename, "utf-8");
+type ParsedComponent = {
+  components: string[];
+  emittedEvents: string[];
+  handledEvents: string[];
+};
+
+export function parseComponent(componentCode: string): ParsedComponent {
   const parsedComponent = vueCompiler.parseComponent(componentCode);
   const template = parsedComponent?.template?.content;
   const scriptCode = parsedComponent?.script?.content;
@@ -37,7 +42,7 @@ export const parseVueComponent = function (filename: string): object {
   };
 
   babel.transformFromAstSync(scriptAST, scriptCode, {
-    filename,
+    filename: "",
     plugins: [
       function ComponentGraph() {
         return {
@@ -86,5 +91,8 @@ export const parseVueComponent = function (filename: string): object {
 
   visitTemplateASTNode(templateAST);
 
-  return { components, emittedEvents, handledEvents };
-};
+  return _.mapValues(
+    { components, emittedEvents, handledEvents },
+    (x: Set<string>) => Array.from(x)
+  );
+}
