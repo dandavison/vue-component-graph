@@ -36,7 +36,7 @@ export const parseVueComponent = function (filename: string): object {
     },
   };
 
-  const output = babel.transformFromAstSync(scriptAST, scriptCode, {
+  babel.transformFromAstSync(scriptAST, scriptCode, {
     filename,
     plugins: [
       function ComponentGraph() {
@@ -49,6 +49,11 @@ export const parseVueComponent = function (filename: string): object {
                 let gparentPath = path.parentPath.parentPath;
                 if (gparentPath.isCallExpression()) {
                   emittedEvents.add(gparentPath.node.arguments[0].value);
+                }
+              } else if (path.node.name === "$on") {
+                let gparentPath = path.parentPath.parentPath;
+                if (gparentPath.isCallExpression()) {
+                  handledEvents.add(gparentPath.node.arguments[0].value);
                 }
               }
             },
