@@ -1,0 +1,9 @@
+{
+  "name": "vue-component-graph",
+  "version": "0.0.1",
+  "description": "A static analysis tool for creating visualizations of a Vue.js codebase",
+  "main": "dist/index.js",
+  "scripts": {},
+  "author": "Dan Davison",
+  "license": "ISC"
+}
