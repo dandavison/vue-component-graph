@@ -1,10 +1,23 @@
 #!/usr/bin/env node
+
 const babel = require("@babel/core");
+const vueCompiler = require("vue-template-compiler");
 const fs = require("fs");
 
 const filename = process.argv[2];
-const code = fs.readFileSync(filename, "utf-8");
-const ast = require("@babel/parser").parse(code, {
+const componentCode = fs.readFileSync(filename, "utf-8");
+const parsedComponent = vueCompiler.parseComponent(componentCode);
+const template = parsedComponent?.template?.content;
+const scriptCode = parsedComponent?.script?.content;
+if (!(template && scriptCode)) {
+  console.error("Failed to parse .vue component file");
+  process.exit(1);
+}
+const compiledTemplate = vueCompiler.compile(template);
+const templateAST = compiledTemplate.ast;
+const templateCode = compiledTemplate.render;
+
+const scriptAST = require("@babel/parser").parse(scriptCode, {
   sourceType: "module",
   plugins: ["typescript"],
 });
@@ -23,7 +36,7 @@ const componentsIdentifierVisitor = {
   },
 };
 
-const output = babel.transformFromAstSync(ast, code, {
+const output = babel.transformFromAstSync(scriptAST, scriptCode, {
   filename,
   plugins: [
     function ComponentGraph() {
