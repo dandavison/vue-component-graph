@@ -2,7 +2,7 @@ const _ = require("lodash");
 const babel = require("@babel/core");
 const vueCompiler = require("vue-template-compiler");
 
-type ParsedComponent = {
+export type ParsedComponent = {
   components: string[];
   emittedEvents: string[];
   handledEvents: string[];

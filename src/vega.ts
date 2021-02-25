@@ -1,3 +1,16 @@
+type VegaTreeEdge = {
+  id: string;
+  parent: string | null;
+};
+
+export function formatGraphVega(graph: Graph): string {
+  const edges = spec.data[0].values as VegaTreeEdge[];
+  for (let { parent, child } of graph) {
+    edges?.push({ id: child, parent });
+  }
+  return formatHTML(spec);
+}
+
 const spec = {
   $schema: "https://vega.github.io/schema/vega/v5.json",
   width: 200,
@@ -16,13 +29,7 @@ const spec = {
   data: [
     {
       name: "tree",
-      values: [
-        { id: "A", parent: null },
-        { id: "B", parent: "A" },
-        { id: "C", parent: "A" },
-        { id: "D", parent: "C" },
-        { id: "E", parent: "C" },
-      ],
+      values: [],
       transform: [
         {
           type: "stratify",
@@ -83,7 +90,7 @@ const spec = {
   ],
 };
 
-export function formatGraphVega(graph: Graph): string {
+function formatHTML(spec: object): string {
   return `
 <!DOCTYPE html>
 <html>
@@ -98,7 +105,7 @@ export function formatGraphVega(graph: Graph): string {
     </div>
   </body>
   <script>
-    var spec=${JSON.stringify(spec)};
+    var spec=${JSON.stringify(spec, null, 2)};
     function image(view, type) {
       return function (event) {
         event.preventDefault();

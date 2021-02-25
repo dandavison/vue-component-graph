@@ -5,13 +5,6 @@ const fs = require("fs");
 const path = require("path");
 const readDirTree = require("recursive-readdir");
 
-// TODO: duplicated type definition
-type ParsedComponent = {
-  components: string[];
-  emittedEvents: string[];
-  handledEvents: string[];
-};
-
 const rootComponentPath = process.argv[2];
 
 if (!rootComponentPath) {
@@ -20,7 +13,7 @@ if (!rootComponentPath) {
   process.exit(1);
 }
 
-type Graph = Map<string, Graph>;
+type Graph = { parent: string | null; child: string; edgeData: object }[];
 
 async function findComponents(rootDir: string): Promise<string[]> {
   var paths: string[] = await readDirTree(rootDir);
@@ -28,12 +21,12 @@ async function findComponents(rootDir: string): Promise<string[]> {
 }
 
 async function readComponents(
-  paths: string[]
+  filepaths: string[]
 ): Promise<{ name: string; code: string }> {
   const code = await Promise.all(
-    paths.map((p: string) => fs.readFileSync(p, "utf-8"))
+    filepaths.map((p: string) => fs.readFileSync(p, "utf-8"))
   );
-  const names = paths.map((p) => path.basename(p, ".vue"));
+  const names = filepaths.map(getComponentName);
   if (names.length !== new Set(names).size) {
     console.error("Duplicate component names:", names);
     process.exit(1);
@@ -41,7 +34,16 @@ async function readComponents(
   return _.zipObject(names, code);
 }
 
-const { parseComponent } = require("../src/parse-vue-component");
+function getComponentName(filepath: string): string {
+  return path.basename(filepath, ".vue");
+}
+
+const {
+  parseComponent,
+  ParsedComponentValue,
+} = require("../src/parse-vue-component");
+
+type ParsedComponent = InstanceType<typeof ParsedComponentValue>;
 
 function parseComponents(code: {
   name: string;
@@ -50,13 +52,34 @@ function parseComponents(code: {
   return _.mapValues(code, parseComponent);
 }
 
-function createGraph(components: {
-  name: string;
-  component: ParsedComponent;
-}): Graph {
-  const graph = new Map();
+type ProjectComponents = {
+  [index: string]: ParsedComponent;
+};
+
+// Create tree rooted at rootComponent; do not add edges
+// involving components outside this tree
+function createGraph(components: ProjectComponents): Graph {
+  const root = getComponentName(rootComponentPath);
+  const graph = [] as Graph;
+  graph.push({
+    parent: null,
+    child: root,
+    edgeData: {},
+  });
+  addTreeEdgesToGraph(root, graph, components);
 
   return graph;
+}
+
+function addTreeEdgesToGraph(
+  root: string,
+  graph: Graph,
+  components: ProjectComponents
+) {
+  for (let child of components[root].components) {
+    graph.push({ parent: root, child, edgeData: {} });
+    addTreeEdgesToGraph(child, graph, components);
+  }
 }
 
 const { formatGraphVega } = require("../src/vega");
