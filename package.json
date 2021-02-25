@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "ts-node src/index.ts"
   },
+  "bin": {
+    "vue-component-graph": "dist/index.js"
+  },
   "author": "Dan Davison",
   "license": "ISC",
   "devDependencies": {
