@@ -62,5 +62,18 @@ export const parseVueComponent = function (filename: string): object {
       },
     ],
   });
+
+  // TODO: What is the correct way to traverse the AST obtained from the template code?
+  function visitTemplateASTNode(node: any): void {
+    for (let name of Object.keys(node.events || {})) {
+      handledEvents.add(name);
+    }
+    for (let child of node.children || []) {
+      visitTemplateASTNode(child);
+    }
+  }
+
+  visitTemplateASTNode(templateAST);
+
   return { components, emittedEvents, handledEvents };
 };
