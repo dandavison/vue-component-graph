@@ -8,6 +8,8 @@ type ParsedComponent = {
   handledEvents: string[];
 };
 
+const IGNORED_EVENTS = ["focus", "select", "blur", "click", "input"];
+
 export function parseComponent(componentCode: string): ParsedComponent {
   const parsedComponent = vueCompiler.parseComponent(componentCode);
   const template = parsedComponent?.template?.content;
@@ -90,6 +92,11 @@ export function parseComponent(componentCode: string): ParsedComponent {
   }
 
   visitTemplateASTNode(templateAST);
+
+  for (let name of IGNORED_EVENTS) {
+    emittedEvents.delete(name);
+    handledEvents.delete(name);
+  }
 
   return _.mapValues(
     { components, emittedEvents, handledEvents },
