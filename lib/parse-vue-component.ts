@@ -20,16 +20,17 @@ export const parseVueComponent = function (filename: string): object {
     plugins: ["typescript"],
   });
 
-  const components: string[] = [];
-  const emittedEvents: string[] = [];
-  const handledEvents: string[] = [];
+  // TODO: nodes are being visited twice hence Set for deduplication
+  const components: Set<string> = new Set();
+  const emittedEvents: Set<string> = new Set();
+  const handledEvents: Set<string> = new Set();
 
   const componentsIdentifierVisitor = {
     Identifier: {
       enter({ node }: any) {
         // TODO: collect `components` object key names only
         if (node.name !== "components") {
-          components.push(node.name);
+          components.add(node.name);
         }
       },
     },
@@ -47,7 +48,7 @@ export const parseVueComponent = function (filename: string): object {
               } else if (path.node.name.includes("emit")) {
                 let gparentPath = path.parentPath.parentPath;
                 if (gparentPath.isCallExpression()) {
-                  emittedEvents.push(gparentPath.node.arguments[0].value);
+                  emittedEvents.add(gparentPath.node.arguments[0].value);
                 }
               }
             },
