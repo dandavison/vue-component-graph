@@ -74,6 +74,11 @@ export const parseVueComponent = function (filename: string): object {
         emittedEvents.add(match[1].slice(1, -1));
       }
     }
+    for (let entry of node.ifConditions || []) {
+      for (let child of entry.block?.children || []) {
+        visitTemplateASTNode(child);
+      }
+    }
     for (let child of node.children || []) {
       visitTemplateASTNode(child);
     }
