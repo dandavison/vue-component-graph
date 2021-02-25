@@ -45,7 +45,7 @@ export const parseVueComponent = function (filename: string): object {
             Identifier(path: any) {
               if (path.isIdentifier({ name: "components" })) {
                 path.parentPath.traverse(componentsIdentifierVisitor);
-              } else if (path.node.name.includes("emit")) {
+              } else if (path.node.name === "$emit") {
                 let gparentPath = path.parentPath.parentPath;
                 if (gparentPath.isCallExpression()) {
                   emittedEvents.add(gparentPath.node.arguments[0].value);
