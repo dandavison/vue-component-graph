@@ -12,8 +12,6 @@ type ParsedComponent = {
   handledEvents: string[];
 };
 
-const { parseComponent } = require("../lib/parse-vue-component");
-
 const rootComponentPath = process.argv[2];
 
 if (!rootComponentPath) {
@@ -31,30 +29,44 @@ async function findComponents(rootDir: string): Promise<string[]> {
 
 async function readComponents(
   paths: string[]
-): Promise<{ path: string; code: string }> {
-  const components = await Promise.all(
+): Promise<{ name: string; code: string }> {
+  const code = await Promise.all(
     paths.map((p: string) => fs.readFileSync(p, "utf-8"))
   );
-  return _.zipObject(paths, components);
+  const names = paths.map((p) => path.basename(p, ".vue"));
+  if (names.length !== new Set(names).size) {
+    console.error("Duplicate component names:", names);
+    process.exit(1);
+  }
+  return _.zipObject(names, code);
 }
 
+const { parseComponent } = require("../src/parse-vue-component");
+
 function parseComponents(code: {
-  path: string;
+  name: string;
   code: string;
-}): { path: string; component: ParsedComponent } {
+}): { name: string; component: ParsedComponent } {
   return _.mapValues(code, parseComponent);
 }
 
 function createGraph(components: {
-  path: string;
+  name: string;
   component: ParsedComponent;
 }): Graph {
-  console.log(components);
-  return new Map();
+  const graph = new Map();
+
+  return graph;
 }
 
-function writeGraph(graph: Graph) {
-  console.log("<write-graph>");
+const { formatGraphVega } = require("../src/vega");
+
+function formatGraph(graph: Graph): string {
+  return formatGraphVega(graph);
+}
+
+function writeGraph(graph: string): void {
+  process.stdout.write(graph);
 }
 
 const rootDir = path.dirname(rootComponentPath);
@@ -63,4 +75,5 @@ findComponents(rootDir)
   .then(readComponents)
   .then(parseComponents)
   .then(createGraph)
+  .then(formatGraph)
   .then(writeGraph);
