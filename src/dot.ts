@@ -1,11 +1,11 @@
+var { Graph } = require("./types");
+type Graph = InstanceType<typeof Graph>;
+
 type Edge = {
   from: string;
   to: string;
   attrs: object;
 };
-
-// TODO: duplicated
-type Graph = { parent: string | null; child: string; edgeData: object }[];
 
 export function formatGraphDot(graph: Graph): string {
   const edges: Edge[] = [];

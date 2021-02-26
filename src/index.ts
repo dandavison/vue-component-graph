@@ -5,6 +5,9 @@ const fs = require("fs");
 const path = require("path");
 const readDirTree = require("recursive-readdir");
 
+var { Graph } = require("./types");
+type Graph = InstanceType<typeof Graph>;
+
 const rootComponentPath = process.argv[2];
 
 if (!rootComponentPath) {
@@ -12,8 +15,6 @@ if (!rootComponentPath) {
   console.log("Process received arguments:", process.argv);
   process.exit(1);
 }
-
-type Graph = { parent: string | null; child: string; edgeData: object }[];
 
 async function findComponents(rootDir: string): Promise<string[]> {
   var paths: string[] = await readDirTree(rootDir);
