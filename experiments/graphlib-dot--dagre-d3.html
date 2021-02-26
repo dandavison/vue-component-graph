@@ -1,0 +1,85 @@
+<html>
+  <head>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://dagrejs.github.io/project/graphlib-dot/v0.6.4/graphlib-dot.min.js"></script>
+    <script src="https://dagrejs.github.io/project/dagre-d3/v0.5.0/dagre-d3.min.js"></script>
+
+    <style>
+      svg {
+        overflow: hidden;
+      }
+      .node rect {
+        stroke: #333;
+        stroke-width: 1.5px;
+        fill: #fff;
+      }
+      .edgeLabel rect {
+        fill: #fff;
+      }
+      .edgePath {
+        stroke: #333;
+        stroke-width: 1.5px;
+        fill: none;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="text/javascript">
+      window.onload = function () {
+        // Parse the DOT syntax into a graphlib object.
+        var g = graphlibDot.read(
+          `
+digraph G {
+ranksep = 1.5
+
+  { rank = source; "ChallengeView" }
+  { rank = same;  "ControlPanel"; "FamilySelector"; "Challenge"; }
+  { rank = same;  "NamesSelector"; "ChallengeForm"; "RevealArea"; "ChallengeDescription"; "ChallengeControls" }
+  { rank = same; "ChallengeFormField"; "RecordingPlayer" }
+  { rank = same; "ChallengeFormFieldDropdownRow"; "ChallengeFormFieldDropdownRowMobile" }
+
+  ChallengeView -> ControlPanel []
+  ControlPanel -> NamesSelector []
+  ChallengeView -> FamilySelector []
+  ChallengeView -> Challenge []
+  Challenge -> RecordingPlayer []
+  Challenge -> ChallengeForm []
+  ChallengeForm -> ChallengeFormField []
+  ChallengeFormField -> ChallengeFormFieldDropdownRow []
+  ChallengeFormField -> ChallengeFormFieldDropdownRowMobile []
+  Challenge -> RevealArea []
+  RevealArea -> RecordingPlayer []
+  Challenge -> ChallengeDescription []
+  Challenge -> ChallengeControls []
+  ChallengeControls -> RecordingPlayer []
+  ChallengeView -> Challenge [label="change:species-filters", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  ChallengeControls -> Challenge [label="challenge:play", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  ChallengeControls -> Challenge [label="challenge:next", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  Challenge -> ChallengeView [label="set:challenge-families", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  ChallengeForm -> Challenge [label="answer:species-correct", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  FamilySelector -> Challenge [label="family:select", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  ControlPanel -> FamilySelector [label="show:family-selector", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  ControlPanel -> ChallengeView [label="change:settings", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  NamesSelector -> ChallengeView [label="change:settings", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  Navbar -> ControlPanel [label="control-panel:show", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  Navbar -> Map [label="show:help", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  RecordingPlayer -> Challenge [label="challenge:have-recording", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+}`
+        );
+
+        // Render the graphlib object using d3.
+        var render = new dagreD3.render();
+        render(d3.select("svg g"), g);
+
+        // Optional - resize the SVG element based on the contents.
+        var svg = document.querySelector("#graphContainer");
+        var bbox = svg.getBBox();
+        svg.style.width = bbox.width + 40.0 + "px";
+        svg.style.height = bbox.height + 40.0 + "px";
+      };
+    </script>
+    <svg id="graphContainer">
+      <g />
+    </svg>
+  </body>
+</html>

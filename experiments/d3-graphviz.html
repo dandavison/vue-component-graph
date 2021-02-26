@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<body>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="http://viz-js.com/bower_components/viz.js/viz-lite.js"></script>
+  <script src="https://github.com/magjac/d3-graphviz/releases/download/v0.0.4/d3-graphviz.min.js"></script>
+  <div id="graph" style="text-align: center"></div>
+  <script>
+    d3.select("#graph").graphviz().renderDot(`digraph G {
+ranksep = 1.5
+
+  { rank = source; "ChallengeView" }
+  { rank = same;  "ControlPanel"; "FamilySelector"; "Challenge"; }
+  { rank = same;  "NamesSelector"; "ChallengeForm"; "RevealArea"; "ChallengeDescription"; "ChallengeControls" }
+  { rank = same; "ChallengeFormField"; "RecordingPlayer" }
+  { rank = same; "ChallengeFormFieldDropdownRow"; "ChallengeFormFieldDropdownRowMobile" }
+
+  ChallengeView -> ControlPanel []
+  ControlPanel -> NamesSelector []
+  ChallengeView -> FamilySelector []
+  ChallengeView -> Challenge []
+  Challenge -> RecordingPlayer []
+  Challenge -> ChallengeForm []
+  ChallengeForm -> ChallengeFormField []
+  ChallengeFormField -> ChallengeFormFieldDropdownRow []
+  ChallengeFormField -> ChallengeFormFieldDropdownRowMobile []
+  Challenge -> RevealArea []
+  RevealArea -> RecordingPlayer []
+  Challenge -> ChallengeDescription []
+  Challenge -> ChallengeControls []
+  ChallengeControls -> RecordingPlayer []
+  ChallengeView -> Challenge [label="change:species-filters", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  ChallengeControls -> Challenge [label="challenge:play", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  ChallengeControls -> Challenge [label="challenge:next", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  Challenge -> ChallengeView [label="set:challenge-families", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  ChallengeForm -> Challenge [label="answer:species-correct", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  FamilySelector -> Challenge [label="family:select", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  ControlPanel -> FamilySelector [label="show:family-selector", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  ControlPanel -> ChallengeView [label="change:settings", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  NamesSelector -> ChallengeView [label="change:settings", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  Navbar -> ControlPanel [label="control-panel:show", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  Navbar -> Map [label="show:help", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+  RecordingPlayer -> Challenge [label="challenge:have-recording", constraint=false, weight=0, color=red, fontcolor=red, style=dashed]
+}`);
+  </script>
+</body>
