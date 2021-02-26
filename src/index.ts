@@ -63,11 +63,11 @@ type EventPeers = Map<string, string[]>;
 // involving components outside this tree
 function createGraph(components: ProjectComponents): Graph {
   const root = getComponentName(rootComponentPath);
-  const graph = [] as Graph;
+  const graph: Graph = [];
   graph.push({
-    parent: null,
-    child: root,
-    edgeData: {},
+    from: null,
+    to: root,
+    attrs: {},
   });
   addTreeEdgesToGraph(root, graph, components);
 
@@ -93,7 +93,7 @@ function createGraph(components: ProjectComponents): Graph {
   for (let [ev, peers] of events.emitters.entries()) {
     for (let from of peers) {
       for (let to of events.handlers.get(ev) || []) {
-        graph.push({ parent: from, child: to, edgeData: { event: ev } });
+        graph.push({ from, to, attrs: { event: ev } });
       }
     }
   }
@@ -109,7 +109,7 @@ function addTreeEdgesToGraph(
   components: ProjectComponents
 ) {
   for (let child of components[root].components) {
-    graph.push({ parent: root, child, edgeData: {} });
+    graph.push({ from: root, to: child, attrs: {} });
     addTreeEdgesToGraph(child, graph, components);
   }
 }

@@ -1,20 +1,15 @@
-var { Graph } = require("./types");
+var { Edge, Graph } = require("./types");
+type Edge = InstanceType<typeof Edge>;
 type Graph = InstanceType<typeof Graph>;
-
-type Edge = {
-  from: string;
-  to: string;
-  attrs: object;
-};
 
 export function formatGraphDot(graph: Graph): string {
   const edges: Edge[] = [];
-  for (let { parent, child, edgeData } of graph) {
-    if (parent) {
-      var attrs = {};
-      let event = (edgeData as any).event;
+  for (let { from, to, attrs } of graph) {
+    if (from) {
+      var dotAttrs = {};
+      let event = (attrs as any).event;
       if (event) {
-        attrs = {
+        dotAttrs = {
           label: `"${event}"`,
           constraint: false,
           weight: 0,
@@ -24,9 +19,9 @@ export function formatGraphDot(graph: Graph): string {
         };
       }
       edges?.push({
-        from: parent,
-        to: child,
-        attrs: attrs,
+        from,
+        to,
+        attrs: dotAttrs,
       });
     }
   }
