@@ -98,6 +98,22 @@ export function parseComponent(componentCode: string): ParsedComponent {
     handledEvents.delete(name);
   }
 
+  ///////////////////////////////////////////
+  // TMP
+  for (let name of emittedEvents) {
+    if (name.startsWith("settings:")) {
+      emittedEvents.delete(name);
+      emittedEvents.add("change:settings");
+    }
+  }
+  for (let name of handledEvents) {
+    if (name.startsWith("settings:")) {
+      handledEvents.delete(name);
+      handledEvents.add("change:settings");
+    }
+  }
+  ///////////////////////////////////////////
+
   return _.mapValues(
     { components, emittedEvents, handledEvents },
     (x: Set<string>) => Array.from(x)

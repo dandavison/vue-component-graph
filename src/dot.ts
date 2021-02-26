@@ -33,10 +33,19 @@ export function formatGraphDot(graph: Graph): string {
   return _format(edges);
 }
 
+const SUBGRAPHS = `
+  { rank = source; "ChallengeView" }
+  { rank = same;  "ControlPanel"; "FamilySelector"; "Challenge"; }
+  { rank = same;  "NamesSelector"; "ChallengeForm"; "RevealArea"; "ChallengeDescription"; "ChallengeControls" }
+  { rank = same; "ChallengeFormField"; "RecordingPlayer" }
+  { rank = same; "ChallengeFormFieldDropdownRow"; "ChallengeFormFieldDropdownRowMobile" }
+  `;
+
 function _format(edges: Edge[]): string {
   const lines = [];
   lines.push("digraph G {");
   lines.push("ranksep = 1.5");
+  lines.push(SUBGRAPHS);
   for (let e of edges) {
     lines.push(`  ${e.from} -> ${e.to} [${_formatAttrs(e.attrs)}]`);
   }
