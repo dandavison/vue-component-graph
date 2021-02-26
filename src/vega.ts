@@ -13,8 +13,8 @@ export function formatGraphVega(graph: Graph): string {
 
 const spec = {
   $schema: "https://vega.github.io/schema/vega/v5.json",
-  width: 200,
-  height: 100,
+  width: 800,
+  height: 600,
   padding: 5,
 
   signals: [
@@ -106,26 +106,8 @@ function formatHTML(spec: object): string {
   </body>
   <script>
     var spec=${JSON.stringify(spec, null, 2)};
-    function image(view, type) {
-      return function (event) {
-        event.preventDefault();
-        view
-          .toImageURL(type)
-          .then(function (url) {
-            var link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("target", "_blank");
-            link.setAttribute("download", "tree." + type);
-            link.dispatchEvent(new MouseEvent("click"));
-          })
-          .catch(function (error) {
-            console.error(error);
-          });
-      };
-    }
 
     var view = new vega.View(vega.parse(spec), {
-      loader: vega.loader({ baseURL: "/vega/" }),
       logLevel: vega.Warn,
       renderer: "svg",
     })
