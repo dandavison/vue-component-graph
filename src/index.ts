@@ -82,10 +82,10 @@ function addTreeEdgesToGraph(
   }
 }
 
-const { formatGraphVega } = require("../src/vega");
+const { formatGraphDot } = require("../src/dot");
 
 function formatGraph(graph: Graph): string {
-  return formatGraphVega(graph);
+  return formatGraphDot(graph);
 }
 
 function writeGraph(graph: string): void {
