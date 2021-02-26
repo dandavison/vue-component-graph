@@ -56,6 +56,8 @@ type ProjectComponents = {
   [index: string]: ParsedComponent;
 };
 
+type EventPeers = Map<string, string[]>;
+
 // Create tree rooted at rootComponent; do not add edges
 // involving components outside this tree
 function createGraph(components: ProjectComponents): Graph {
@@ -68,8 +70,37 @@ function createGraph(components: ProjectComponents): Graph {
   });
   addTreeEdgesToGraph(root, graph, components);
 
+  const events = {
+    emitters: new Map() as EventPeers,
+    handlers: new Map() as EventPeers,
+  };
+  for (let [name, parsed] of Object.entries(components)) {
+    for (let ev of parsed.emittedEvents) {
+      if (!events.emitters.has(ev)) {
+        events.emitters.set(ev, []);
+      }
+      events.emitters.get(ev)?.push(name);
+    }
+    for (let ev of parsed.handledEvents) {
+      if (!events.handlers.has(ev)) {
+        events.handlers.set(ev, []);
+      }
+      events.handlers.get(ev)?.push(name);
+    }
+  }
+
+  for (let [ev, peers] of events.emitters.entries()) {
+    for (let from of peers) {
+      for (let to of events.handlers.get(ev) || []) {
+        graph.push({ parent: from, child: to, edgeData: { event: ev } });
+      }
+    }
+  }
+
   return graph;
 }
+
+function _collectEventPeers(events: EventPeers) {}
 
 function addTreeEdgesToGraph(
   root: string,

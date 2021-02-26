@@ -4,11 +4,23 @@ type Edge = {
   attrs: object;
 };
 
+// TODO: duplicated
+type Graph = { parent: string | null; child: string; edgeData: object }[];
+
 export function formatGraphDot(graph: Graph): string {
   const edges: Edge[] = [];
-  for (let { parent, child } of graph) {
+  for (let { parent, child, edgeData } of graph) {
     if (parent) {
-      edges?.push({ from: parent, to: child, attrs: {} });
+      var attrs = {};
+      let event = (edgeData as any).event;
+      if (event) {
+        attrs = { label: `"${event}"` };
+      }
+      edges?.push({
+        from: parent,
+        to: child,
+        attrs: attrs,
+      });
     }
   }
   return _format(edges);
