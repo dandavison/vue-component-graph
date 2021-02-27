@@ -4,19 +4,45 @@ const { Edge, Graph } = require("./types");
 type Edge = InstanceType<typeof Edge>;
 type Graph = InstanceType<typeof Graph>;
 
+// Brewer Dark28
+// http://graphviz.org/doc/info/colors.html
+const EDGE_COLORS = [
+  "#1b9e77",
+  "#d95f02",
+  "#7570b3",
+  "#e7298a",
+  "#66a61e",
+  "#e6ab02",
+  "#a6761d",
+  "#666666",
+];
+
+function* colorGenerator(): Generator<string> {
+  const n = EDGE_COLORS.length;
+  var i = 0;
+  while (true) {
+    yield EDGE_COLORS[i % n];
+    i += 1;
+  }
+}
+
 export function serializeGraph(graph: Graph): string {
   const edges: Edge[] = [];
+  const colors = colorGenerator();
+  const eventColors = new Map() as Map<string, string>;
   for (let { from, to, attrs } of graph) {
     if (from) {
       var dotAttrs = {};
       let event = (attrs as any).event;
       if (event) {
+        if (!eventColors.has(event)) {
+          eventColors.set(event, colors.next().value);
+        }
+        let color = "red";
         dotAttrs = {
-          label: `"${event}"`,
           constraint: false,
           weight: 0,
-          color: "red",
-          fontcolor: "red",
+          color: `"${eventColors.get(event)}"`,
           style: "dashed",
         };
       }
