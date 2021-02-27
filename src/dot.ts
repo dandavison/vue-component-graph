@@ -1,4 +1,6 @@
-var { Edge, Graph } = require("./types");
+const { buildDAG, getNodeDepths } = require("./dag");
+const { Edge, Graph } = require("./types");
+
 type Edge = InstanceType<typeof Edge>;
 type Graph = InstanceType<typeof Graph>;
 
@@ -25,22 +27,39 @@ export function serializeGraph(graph: Graph): string {
       });
     }
   }
-  return _format(edges);
+  const subgraphs = getSubgraphs(graph);
+  return _format(edges, subgraphs);
 }
 
-const SUBGRAPHS = `
-  { rank = source; "ChallengeView" }
-  { rank = same;  "ControlPanel"; "FamilySelector"; "Challenge"; }
-  { rank = same;  "NamesSelector"; "ChallengeForm"; "RevealArea"; "ChallengeDescription"; "ChallengeControls" }
-  { rank = same; "ChallengeFormField"; "RecordingPlayer" }
-  { rank = same; "ChallengeFormFieldDropdownRow"; "ChallengeFormFieldDropdownRowMobile" }
-  `;
+function getSubgraphs(graph: Graph): string[] {
+  const dag = buildDAG(graph);
+  const depths: Map<string, number> = getNodeDepths(dag);
+  const sameRankGroups = new Map() as Map<number, string[]>;
 
-function _format(edges: Edge[]): string {
+  for (let [node, depth] of depths.entries()) {
+    if (!sameRankGroups.has(depth)) {
+      sameRankGroups.set(depth, []);
+    }
+    sameRankGroups.get(depth)?.push(node);
+  }
+
+  const subgraphs = [];
+  for (let [depth, nodes] of sameRankGroups) {
+    nodes = nodes.map((s) => `"${s}"`);
+    if (depth == 0) {
+      subgraphs.push(`  { rank = source; ${nodes.join("; ")}}`);
+    } else {
+      subgraphs.push(`  { rank = same; ${nodes.join("; ")}}`);
+    }
+  }
+  return subgraphs;
+}
+
+function _format(edges: Edge[], subgraphs: string[]): string {
   const lines = [];
   lines.push("digraph G {");
-  lines.push("ranksep = 1.5");
-  lines.push(SUBGRAPHS);
+  lines.push("  ranksep = 1.5");
+  lines.push(...subgraphs);
   for (let e of edges) {
     lines.push(`  ${e.from} -> ${e.to} [${_formatAttrs(e.attrs)}]`);
   }
