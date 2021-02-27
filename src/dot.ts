@@ -40,10 +40,14 @@ export function serializeGraph(graph: Graph): string {
         }
         let color = "red";
         dotAttrs = {
+          style: "bold",
           constraint: false,
           weight: 0,
           color: `"${eventColors.get(event)}"`,
-          style: "dashed",
+        };
+      } else {
+        dotAttrs = {
+          style: "bold",
         };
       }
       edges?.push({
