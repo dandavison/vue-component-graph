@@ -59,8 +59,13 @@ type ProjectComponents = {
 
 type EventPeers = Map<string, string[]>;
 
-// Create tree rooted at rootComponent; do not add edges
-// involving components outside this tree
+// The graph we create is a sort of union/superposition of two graphs:
+// 1. The component DAG: In this DAG there is an edge from
+//    component A to component B if B is a child component of A
+//    (B occurs in A's DOM subtree and A might pass B props).
+//    rootComponent has no parent in the DAG.
+// 2. The event graph: in this graph there is an edge from B to A if B emits an
+//    event of a type which A handles.
 function createGraph(components: ProjectComponents): Graph {
   const root = getComponentName(rootComponentPath);
   const graph: Graph = [];
@@ -69,7 +74,7 @@ function createGraph(components: ProjectComponents): Graph {
     to: root,
     attrs: {},
   });
-  addTreeEdgesToGraph(root, graph, components);
+  addDAGEdgesToGraph(root, graph, components);
 
   const events = {
     emitters: new Map() as EventPeers,
@@ -103,14 +108,14 @@ function createGraph(components: ProjectComponents): Graph {
 
 function _collectEventPeers(events: EventPeers) {}
 
-function addTreeEdgesToGraph(
+function addDAGEdgesToGraph(
   root: string,
   graph: Graph,
   components: ProjectComponents
 ) {
   for (let child of components[root].components) {
     graph.push({ from: root, to: child, attrs: {} });
-    addTreeEdgesToGraph(child, graph, components);
+    addDAGEdgesToGraph(child, graph, components);
   }
 }
 
