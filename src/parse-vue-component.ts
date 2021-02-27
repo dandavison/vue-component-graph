@@ -14,7 +14,7 @@ export function parseComponent(componentCode: string): ParsedComponent {
   const parsedComponent = vueCompiler.parseComponent(componentCode);
   const template = parsedComponent?.template?.content;
   const scriptCode = parsedComponent?.script?.content;
-  if (!(template && scriptCode)) {
+  if (template === undefined || scriptCode === undefined) {
     console.error("Failed to parse .vue component file");
     process.exit(1);
   }
