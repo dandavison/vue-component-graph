@@ -3,7 +3,7 @@ type VegaTreeEdge = {
   parent: string | null;
 };
 
-export function formatGraphVega(graph: Graph): string {
+export function serializeGraph(graph: Graph): string {
   const edges = spec.data[0].values as VegaTreeEdge[];
   for (let { parent, child } of graph) {
     edges?.push({ id: child, parent });

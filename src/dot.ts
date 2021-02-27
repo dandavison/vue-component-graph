@@ -2,7 +2,7 @@ var { Edge, Graph } = require("./types");
 type Edge = InstanceType<typeof Edge>;
 type Graph = InstanceType<typeof Graph>;
 
-export function formatGraphDot(graph: Graph): string {
+export function serializeGraph(graph: Graph): string {
   const edges: Edge[] = [];
   for (let { from, to, attrs } of graph) {
     if (from) {

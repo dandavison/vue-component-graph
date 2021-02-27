@@ -114,11 +114,7 @@ function addTreeEdgesToGraph(
   }
 }
 
-const { formatGraphDot } = require("../src/dot");
-
-function formatGraph(graph: Graph): string {
-  return formatGraphDot(graph);
-}
+const { serializeGraph } = require("./dot");
 
 function writeGraph(graph: string): void {
   process.stdout.write(graph);
@@ -130,5 +126,5 @@ findComponents(rootDir)
   .then(readComponents)
   .then(parseComponents)
   .then(createGraph)
-  .then(formatGraph)
+  .then(serializeGraph)
   .then(writeGraph);
