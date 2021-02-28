@@ -125,7 +125,7 @@ function writeGraph(graph: string): void {
   process.stdout.write(graph);
 }
 
-const rootDir = path.dirname(rootComponentPath);
+const rootDir = path.dirname(path.dirname(rootComponentPath));
 
 findComponents(rootDir)
   .then(readComponents)
