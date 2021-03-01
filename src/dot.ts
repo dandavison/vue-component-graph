@@ -57,6 +57,19 @@ export function serializeGraph(graph: Graph): string {
       });
     }
   }
+  for (let [event, color] of eventColors) {
+    let [r, g, b] = [
+      color[1] + color[2],
+      color[3] + color[4],
+      color[5] + color[6],
+    ].map((s) => parseInt(s, 16));
+    process.stderr.write(
+      `${event.padEnd(
+        25,
+        " "
+      )} \x1b[48;2;${r};${g};${b}m               \x1b[0m\n`
+    );
+  }
   const subgraphs = getSubgraphs(graph);
   return _format(edges, subgraphs);
 }
