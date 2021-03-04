@@ -119,7 +119,7 @@ function addDAGEdgesToGraph(
   }
 }
 
-const { serializeGraph } = require("./dot");
+const { serializeGraph } = require("./d3-graphviz");
 
 function writeGraph(graph: string): void {
   process.stdout.write(graph);
