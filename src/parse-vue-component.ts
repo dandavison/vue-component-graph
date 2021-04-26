@@ -8,7 +8,7 @@ export type ParsedComponent = {
   handledEvents: string[];
 };
 
-const IGNORED_EVENTS = ["focus", "select", "blur", "click", "input"];
+const IGNORED_EVENTS = ["focus", "blur", "click", "input"];
 
 export function parseComponent(componentCode: string): ParsedComponent {
   const parsedComponent = vueCompiler.parseComponent(componentCode);

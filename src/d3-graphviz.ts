@@ -1,6 +1,7 @@
 const { serializeGraph: serializeGraphAsDot } = require("./dot");
 
 export function serializeGraph(graph: Graph): string {
+  const { dot, legend } = serializeGraphAsDot(graph);
   return `<!DOCTYPE html>
 <meta charset="utf-8" />
 <body>
@@ -9,7 +10,7 @@ export function serializeGraph(graph: Graph): string {
   <script src="https://github.com/magjac/d3-graphviz/releases/download/v0.0.4/d3-graphviz.min.js"></script>
   <div id="graph" style="text-align: center"></div>
   <script>
-    d3.select("#graph").graphviz().renderDot(\`${serializeGraphAsDot(graph)}\`);
+    d3.select("#graph").graphviz().renderDot(\`${dot}\`);
   </script>
 </body>`;
 }

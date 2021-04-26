@@ -26,7 +26,9 @@ function* colorGenerator(): Generator<string> {
   }
 }
 
-export function serializeGraph(graph: Graph): string {
+export function serializeGraph(
+  graph: Graph
+): { dot: string; legend: Map<string, string> } {
   const edges: Edge[] = [];
   const colors = colorGenerator();
   const eventColors = new Map() as Map<string, string>;
@@ -71,7 +73,7 @@ export function serializeGraph(graph: Graph): string {
     );
   }
   const subgraphs = getSubgraphs(graph);
-  return _format(edges, subgraphs);
+  return { dot: _format(edges, subgraphs), legend: eventColors };
 }
 
 function getSubgraphs(graph: Graph): string[] {
